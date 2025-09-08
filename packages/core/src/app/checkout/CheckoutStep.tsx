@@ -182,6 +182,7 @@ const CheckoutStep = ({
                     <CSSTransition
                         addEndListener={handleTransitionEnd}
                         classNames="checkout-view-content"
+                        nodeRef={contentRef}
                         enter={!matched}
                         exit={!matched}
                         in={isActive}

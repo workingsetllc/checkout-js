@@ -29,10 +29,35 @@ After that, you can make changes to the source code and run the following comman
 npm run build
 ```
 
-If you are developing the application locally and want to build the source code in watch mode, you can run the following command:
+If you are developing the application locally and want to build the source code in watch mode, use the dev flow below.
+
+Local development (watch + serve):
 
 ```sh
+# Terminal 1 – builds to ./build with *-dev.js filenames
 npm run dev
+
+# Terminal 2 – serves ./build on http://127.0.0.1:8080
+npm run dev:server
+```
+
+Then, in your store’s Checkout Settings use:
+
+```
+http://127.0.0.1:8080/auto-loader-dev.js
+```
+
+Production-like build (single run + serve):
+
+```sh
+npm run build
+npm run build:server  # serves ./dist
+```
+
+Then use:
+
+```
+http://127.0.0.1:8080/auto-loader.js
 ```
 
 If you want to create a prerelease (i.e.: `alpha`) for testing in the integration environment, you can run the following command:
@@ -61,12 +86,22 @@ npm run regenerate-har
 
 Follow [this guide](https://developer.bigcommerce.com/stencil-docs/customizing-checkout/installing-custom-checkouts) for instructions on how to fork and install this app as a Custom Checkout in your store.
 
-If you want to test your checkout implementation, you can run:
+If you want to test your checkout implementation, run both commands:
+
 ```sh
+# Terminal 1
+npm run dev
+
+# Terminal 2
 npm run dev:server
 ```
 
-And enter the local URL for `auto-loader-dev.js` in Checkout Settings, e.g `http://127.0.0.1:8080/auto-loader-dev.js`
+Then enter the local URL for `auto-loader-dev.js` in Checkout Settings, e.g. `http://127.0.0.1:8080/auto-loader-dev.js`.
+
+Troubleshooting (404s):
+
+- 404 on `auto-loader-dev.js`: ensure `npm run dev` is running and you are using `dev:server` (serves `./build`).
+- 404 on `auto-loader.js`: ensure you ran `npm run build` and are using `build:server` (serves `./dist`).
 
 ## Release
 

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { type FC, type ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { type FC, type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 
 import { preventDefault } from '@bigcommerce/checkout/dom-utils';
@@ -77,6 +77,8 @@ const OrderSummaryPrice: FC<OrderSummaryPriceProps> = ({
         setPreviousAmount(amount);
     }, [ amount ]);
 
+    const bodyRef = useRef<HTMLDivElement>(null);
+
     const handleTransitionEnd: (node: HTMLElement, done: () => void) => void = useCallback((node, done) => {
         node.addEventListener('animationend', ({ target }) => {
             if (target === node) {
@@ -99,6 +101,7 @@ const OrderSummaryPrice: FC<OrderSummaryPriceProps> = ({
             <CSSTransition
                 addEndListener={handleTransitionEnd}
                 classNames="changeHighlight"
+                nodeRef={bodyRef}
                 in={highlight}
                 timeout={{}}
             >
@@ -109,6 +112,7 @@ const OrderSummaryPrice: FC<OrderSummaryPriceProps> = ({
                         'optimizedCheckout-contentPrimary',
                         className,
                     )}
+                    ref={bodyRef}
                 >
                     <span className={classNames('cart-priceItem-label',
                         {

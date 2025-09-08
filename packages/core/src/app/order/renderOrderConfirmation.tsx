@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot, type Root } from 'react-dom/client';
 
 import { configurePublicPath } from '../common/bundler';
 
@@ -29,12 +29,24 @@ export default function renderOrderConfirmation({
         });
     }
 
-    ReactDOM.render(
+    const container = document.getElementById(containerId);
+
+    if (!container) {
+        throw new Error(`Container element with id "${containerId}" was not found.`);
+    }
+
+    const existingRoot: Root | undefined = (container as any).__reactRoot;
+    const root = existingRoot ?? createRoot(container);
+
+    if (!existingRoot) {
+        (container as any).__reactRoot = root;
+    }
+
+    root.render(
         <OrderConfirmationApp
             containerId={containerId}
             publicPath={configuredPublicPath}
             {...props}
         />,
-        document.getElementById(containerId),
     );
 }

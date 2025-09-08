@@ -108,12 +108,15 @@ function appConfig(options, argv) {
                     },
                 },
             },
+            performance: {
+                hints: false,
+            },
             output: {
                 path: isProduction ? join(__dirname, 'dist') : join(__dirname, 'build'),
                 filename: `${outputFilename}.js`,
                 chunkFilename: `${outputFilename}.js`,
                 chunkLoadingGlobal: 'webpackJsonpCheckout',
-                library: LIBRARY_NAME,
+                library: { name: LIBRARY_NAME, type: 'window' },
                 crossOriginLoading: 'anonymous',
             },
             plugins: [
@@ -224,6 +227,17 @@ function appConfig(options, argv) {
                                                 ) {
                                                     return;
                                                 }
+                                                const msg = String(message || '');
+                                                const suppress = [
+                                                    'The legacy JS API is deprecated',
+                                                    'Sass @import rules are deprecated',
+                                                    'Global built-in functions are deprecated',
+                                                    'lighten() is deprecated',
+                                                    'darken() is deprecated',
+                                                ];
+                                                if (suppress.some((p) => msg.includes(p))) {
+                                                    return;
+                                                }
 
                                                 console.warn(`Sass Warning: ${message}`);
 
@@ -289,7 +303,7 @@ function loaderConfig(options, argv) {
             output: {
                 path: isProduction ? join(__dirname, 'dist') : join(__dirname, 'build'),
                 filename: `[name]-${appVersion}.js`,
-                library: LOADER_LIBRARY_NAME,
+                library: { name: LOADER_LIBRARY_NAME, type: 'window' },
                 crossOriginLoading: 'anonymous',
             },
             plugins: [
@@ -426,3 +440,5 @@ module.exports = async function (options, argv) {
 
     return configArr;
 };
+
+

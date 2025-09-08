@@ -5,7 +5,7 @@ import { getDefaultTranslations, isLanguageWindow } from '@bigcommerce/checkout/
 import { isAppExport } from './AppExport';
 import { type RenderCheckoutOptions } from './checkout';
 import { configurePublicPath } from './common/bundler';
-import { isRecordContainingKey, joinPaths } from './common/utility';
+import { isRecord, isRecordContainingKey, joinPaths } from './common/utility';
 import { type RenderOrderConfirmationOptions } from './order';
 
 declare const LIBRARY_NAME: string;
@@ -90,14 +90,23 @@ export function loadFiles(options?: LoadFilesOptions): Promise<LoadFilesResult> 
 
             const appExport = window[LIBRARY_NAME];
 
-            if (!isAppExport(appExport)) {
+            // Some bundlers/environments may wrap named exports under a `default` namespace.
+            const resolvedExport =
+                isAppExport(appExport)
+                    ? appExport
+                    : (isRecord<string, unknown>(appExport) && 'default' in appExport &&
+                       isAppExport((appExport as any).default))
+                        ? (appExport as any).default
+                        : undefined;
+
+            if (!resolvedExport) {
                 throw new Error(
                     'The functions required to bootstrap the application are not available.',
                 );
             }
 
             const { renderCheckout, renderOrderConfirmation, initializeLanguageService } =
-                appExport;
+                resolvedExport;
 
             initializeLanguageService({
                 ...languageConfig,

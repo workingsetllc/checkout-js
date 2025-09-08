@@ -5,6 +5,7 @@ import React, {
     type ReactNode,
     useCallback,
     useContext,
+    useRef,
 } from 'react';
 import { CSSTransition } from 'react-transition-group';
 
@@ -47,6 +48,8 @@ const AccordionItem: FunctionComponent<AccordionItemProps> = ({
         });
     }, []);
 
+    const bodyRef = useRef<HTMLDivElement>(null);
+
     return (
         <li className={classNames(className, { [classNameSelected]: isSelected })}>
             <div className={classNames(headerClassName, { [headerClassNameSelected]: isSelected })}>
@@ -57,12 +60,13 @@ const AccordionItem: FunctionComponent<AccordionItemProps> = ({
                 <CSSTransition
                     addEndListener={transitionEndListener}
                     classNames={bodyClassName}
+                    nodeRef={bodyRef}
                     in={isSelected}
                     mountOnEnter
                     timeout={{}}
                     unmountOnExit
                 >
-                    <div aria-live="polite" className={bodyClassName}>
+                    <div aria-live="polite" className={bodyClassName} ref={bodyRef}>
                         {children}
                     </div>
                 </CSSTransition>

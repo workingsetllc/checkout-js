@@ -1,6 +1,6 @@
 import { noop } from 'lodash';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import { getAppliedStyles } from '@bigcommerce/checkout/dom-utils';
 import { FormContext } from '@bigcommerce/checkout/ui';
@@ -30,6 +30,8 @@ export default function getCreditCardInputStyles(
     parentContainer.appendChild(container);
 
     return new Promise((resolve) => {
+        const root = createRoot(container);
+
         const callbackRef = (element: HTMLInputElement | null) => {
             if (!element) {
                 return;
@@ -37,14 +39,15 @@ export default function getCreditCardInputStyles(
 
             resolve(getAppliedStyles(element, properties));
 
-            ReactDOM.unmountComponentAtNode(container);
+            // Unmount the temporary root and remove the container
+            root.unmount();
 
             if (container.parentElement) {
                 container.parentElement.removeChild(container);
             }
         };
 
-        ReactDOM.render(
+        root.render(
             <FormContext.Provider value={{ isSubmitted: true, setSubmitted: noop }}>
                 <FormFieldContainer hasError={type === CreditCardInputStylesType.Error}>
                     <TextInput
@@ -53,7 +56,6 @@ export default function getCreditCardInputStyles(
                     />
                 </FormFieldContainer>
             </FormContext.Provider>,
-            container,
         );
     });
 }
